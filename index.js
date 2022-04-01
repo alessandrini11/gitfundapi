@@ -33,9 +33,11 @@ app.use(morgan('dev'))
 
 //import routes
 const sexRoutes = require('./routes/Sex')
+const specialityRoutes = require('./routes/Speciality')
 
 //use routes
 app.use('/api/sexs',sexRoutes)
+app.use('/api/specialities',specialityRoutes)
 
 //error manager controller
 app.use((error, req, res, next) => {
