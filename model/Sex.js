@@ -5,7 +5,7 @@ const SexSchema = new Schema({
         type: String,
         required: true
     },
-    Suscribers: [
+    suscribers: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Suscriber',

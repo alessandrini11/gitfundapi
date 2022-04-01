@@ -9,9 +9,14 @@ const SuscriberSchema = new Schema({
         type: String,
         required: true
     },
+    picture: {
+        type: String,
+        required: false
+    },
     registrationNumber: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     sex: {
         type: Schema.Types.ObjectId,
@@ -22,6 +27,10 @@ const SuscriberSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Speciality',
         required: true
+    },
+    isVisibile: {
+        type: Boolean,
+        default: true
     },
     deposits: [
         {

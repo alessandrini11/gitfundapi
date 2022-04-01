@@ -10,7 +10,7 @@ exports.create = (req, res, next) => {
     sex.save()
         .then(sex => {
             res.status(201).json({
-                message: 'Sex saved successfully',
+                message: 'Sex saved',
                 sex
             })
 
