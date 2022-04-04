@@ -1,13 +1,17 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const WithdrawalSchema = new Schema({
-    amout: {
+    amount: {
         type: Number,
         required: true
     },  
     reason: {
         type: String,
         required: true
+    },
+    isVisible: {
+        type: Boolean,
+        default: true
     }
 },
 { 
