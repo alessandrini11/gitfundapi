@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const DepositSchema = new Schema({
-    amout: {
+    amount: {
         type: Number,
         required: true
     },  
@@ -9,6 +9,10 @@ const DepositSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Suscriber',
         required: true
+    },
+    isVisible : { 
+        type: Boolean,
+        default: true
     }
 
 },

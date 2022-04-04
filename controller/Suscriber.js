@@ -15,6 +15,7 @@ const defaultFemaleImage = 'public/images/suscribers/female.jpg'
 
 
 exports.create = (req, res, next) => {
+    //user's input
     const firstName = req.body.firstName
     const lastName = req.body.lastName
     let picture = req.file ? req.file.path : null
@@ -28,13 +29,13 @@ exports.create = (req, res, next) => {
 
 
     //test for the presence of a picture
-    if(!req.file){
+    /*if(!req.file){
         if(sex === '6246bb877111c1cc44df4d70'){
             picture = defaultMaleImage
         } else {
             picture = defaultFemaleImage
         }
-    }
+    }*/
     const suscriber = new Suscriber({
         firstName,
         lastName,
@@ -64,8 +65,10 @@ exports.create = (req, res, next) => {
             return suscriber.save()
         })
         .then(suscriber => {
+            //add the suscriber id in the sex 
             loadedSex.suscribers.push(suscriber._id)
             loadedSex.save()
+            //add the suscriber id in speciality
             loadedSpeciality.suscribers.push(suscriber._id)
             loadedSpeciality.save()
             res.status(201).json({
@@ -82,16 +85,13 @@ exports.create = (req, res, next) => {
 }
 
 exports.getAll = (req, res, next) => {
-    Suscriber.find()
+    Suscriber.find({ isVisibile: true})
         .populate('sex')
         .populate('speciality')
         .populate('deposits')
         .then(suscribers => {
-            const unLockedSuscribers = suscribers.filter(suscriber => {
-                return suscriber.isVisibile === true
-            })
             res.status(200).json({
-                suscribers: unLockedSuscribers
+                suscribers
             })
         })
         .catch(error => {
@@ -130,6 +130,7 @@ exports.getOne = (req, res, next) => {
 }
 
 exports.updateOne = (req, res, next) => {
+    //user input
     const suscriberId = req.params.suscriberId
     const firstName = req.body.firstName
     const lastName = req.body.lastName
@@ -137,6 +138,8 @@ exports.updateOne = (req, res, next) => {
     const sex = req.body.sex
     const speciality = req.body.speciality
 
+    // get the old suscriber, new suscriber , new sex, old sex, new speciality, old speciality
+    //in order to compare them in case of any change
     let oldSuscriber
     let newSuscriber
     let newSex
@@ -146,13 +149,14 @@ exports.updateOne = (req, res, next) => {
 
 
     //test for the presence of a picture
-    if(!req.file){
+    /*if(!req.file){
         if(sex === '6246bb877111c1cc44df4d70'){
             picture = defaultMaleImage
         } else {
             picture = defaultFemaleImage
         }
-    }
+    }*/
+    
     
     Suscriber.findById(suscriberId)
         .then(suscriber => {
@@ -161,6 +165,7 @@ exports.updateOne = (req, res, next) => {
                 error.statusCode = 404
                 throw error
             }
+            //get the suscriber before update
             oldSuscriber = suscriber
             return Suscriber.findById(suscriberId)
         })
@@ -174,6 +179,7 @@ exports.updateOne = (req, res, next) => {
             suscriber.speciality = speciality
             suscriber.picture = picture
 
+            //get the suscriber after update
             newSuscriber = suscriber
             return suscriber.save()
         })
@@ -181,19 +187,26 @@ exports.updateOne = (req, res, next) => {
             return Sex.findById(newSuscriber.sex)
         })
         .then(sex => {
+            //get the sex after update
             newSex = sex
             return Sex.findById(oldSuscriber.sex)
         })
         .then(sex => {
+            //get the sex before update
             oldSex = sex
             return Speciality.findById(newSuscriber.speciality)
         })
         .then(speciality => {
+            //get the speciality after update
             newSpeciality = speciality
             return Speciality.findById(oldSuscriber.speciality)
         })
         .then(speciality => {
+            //get the speciality before update
             oldSpeciality = speciality
+
+            //if suscriber is not present in suscribers array of the choosen sex,
+            //we add the suscriber to the 
             if(!newSex.suscribers.includes(newSuscriber._id)) {
                 newSex.suscribers.push(newSuscriber)
                 newSex.save()
@@ -242,7 +255,6 @@ exports.blockAndUnblock = (req, res, next) => {
             return suscriber.save()
         })
         .then(suscriber => {
-            console.log(suscriber.isVisibile)
             let message
             if(suscriber.isVisibile === true){
                 message = 'Suscriber unblocked'

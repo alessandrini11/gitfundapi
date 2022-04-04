@@ -61,14 +61,18 @@ app.use('/images',express.static(path.join(__dirname, '/public/images')))
 app.use(morgan('dev'))
 
 //import routes
+const depositRoutes = require('./routes/Deposit')
 const sexRoutes = require('./routes/Sex')
 const specialityRoutes = require('./routes/Speciality')
 const suscriberRoutes = require('./routes/Suscriber')
+const withdrawalRoutes = require('./routes/Withdrawal')
 
 //use routes
+app.use('/api/deposits', depositRoutes)
 app.use('/api/sexs',sexRoutes)
 app.use('/api/specialities',specialityRoutes)
 app.use('/api/suscribers',option1,suscriberRoutes)
+app.use('/api/withdrawals', withdrawalRoutes)
 
 //error manager controller
 app.use((error, req, res, next) => {
