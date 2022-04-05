@@ -1,6 +1,22 @@
 const Speciality = require('../model/Speciality')
+const { validationResult } = require('express-validator')
+
 
 exports.create = (req, res, next) => {
+    //verify access
+    if(req.admin.role !== "super_admin"){
+        const error = new Error('Only super admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
+
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
+
     const name = req.body.name
 
     const speciality = new Speciality({
@@ -56,6 +72,20 @@ exports.getOne = (req, res, next) => {
 }
 
 exports.updateOne = (req, res, next) => {
+    //verify access
+    if(req.admin.role !== "super_admin"){
+        const error = new Error('Only super admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
+
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
+    
     const specialityId = req.params.specialityId
     const name =req.body.name 
 
