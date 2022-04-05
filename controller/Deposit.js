@@ -1,7 +1,22 @@
 const Suscriber = require('../model/Suscriber')
 const Deposit = require('../model/Deposit')
+const { validationResult } = require('express-validator')
 
 exports.create = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Visitor cant not perform this action')
+        error.statusCode = 401
+        throw error
+    }
+
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
+
     const suscriber = req.body.suscriber
     const amount = req.body.amount
 
@@ -39,6 +54,12 @@ exports.create = (req, res, next) => {
 }
 
 exports.getAll = (req, res, next) => {
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
     Deposit.find({ isVisible: true })
         .populate('suscriber')
         .then(deposits => {
@@ -76,6 +97,20 @@ exports.getOne = (req, res, next) => {
 }
 
 exports.updateOne = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Visitor cant not perform this action')
+        error.statusCode = 401
+        throw error
+    }
+
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
+
     const depositId = req.params.depositId
     const suscriber = req.body.suscriber
     const amount = req.body.amount
@@ -135,6 +170,12 @@ exports.updateOne = (req, res, next) => {
 }
 
 exports.deleteOne = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Visitor cant not perform this action')
+        error.statusCode = 401
+        throw error
+    }
     const depositId = req.params.depositId
 
     Deposit.findById(depositId)

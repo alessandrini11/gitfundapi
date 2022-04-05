@@ -94,9 +94,9 @@ exports.login = (req, res, next) => {
 }
 
 exports.getAll = (req, res, next) => {
-    
+    //verify access
     if(req.admin.role !== "super_admin"){
-        const error = new Error('Only admin cant perform this action')
+        const error = new Error('Only super admin cant perform this action')
         error.statusCode = 401
         throw error
     }
