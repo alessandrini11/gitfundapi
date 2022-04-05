@@ -170,6 +170,7 @@ exports.updateOne = (req, res, next) => {
             return Suscriber.findById(suscriberId)
         })
         .then(suscriber => {
+            
             if(req.file){
                 clearImage(suscriber.picture)
             }

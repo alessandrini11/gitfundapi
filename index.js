@@ -61,6 +61,7 @@ app.use('/images',express.static(path.join(__dirname, '/public/images')))
 app.use(morgan('dev'))
 
 //import routes
+const adminRoutes = require('./routes/Admin')
 const depositRoutes = require('./routes/Deposit')
 const sexRoutes = require('./routes/Sex')
 const specialityRoutes = require('./routes/Speciality')
@@ -68,6 +69,7 @@ const suscriberRoutes = require('./routes/Suscriber')
 const withdrawalRoutes = require('./routes/Withdrawal')
 
 //use routes
+app.use('/api/admins', adminRoutes)
 app.use('/api/deposits', depositRoutes)
 app.use('/api/sexs',sexRoutes)
 app.use('/api/specialities',specialityRoutes)

@@ -3,7 +3,8 @@ const { Schema } = mongoose;
 const AdminSchema = new Schema({
     username: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -14,6 +15,10 @@ const AdminSchema = new Schema({
         required: true,
         default: 'visitor'
     },
+    isBlocked: {
+        type: Boolean,
+        default: false
+    }
 },
 { 
     timestamps: true
