@@ -1,12 +1,26 @@
 const Admin = require('../model/Admin')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { validationResult } = require('express-validator')
 
 exports.register = (req, res, next) => {
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
+
     const username = req.body.username
     const password = req.body.password
+    const confrimPassword = req.body.confirmPassword
     const role = req.body.role
 
+    if(password !== confrimPassword) {
+        const error = new Error('The confirm password does not match the password')
+        error.status = 422
+        throw error
+    }
     bcrypt.hash(password, 12)
         .then(hash => {
             const admin = new Admin({
@@ -80,6 +94,12 @@ exports.login = (req, res, next) => {
 }
 
 exports.getAll = (req, res, next) => {
+    
+    if(req.admin.role !== "super_admin"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
     Admin.find()
         .then(admins => {
             res.status(200).json({
@@ -97,7 +117,11 @@ exports.getAll = (req, res, next) => {
 exports.getOne = (req, res, next) => {
     const adminId = req.params.adminId
 
-
+    if(req.admin.role !== "super_admin"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
     Admin.findById(adminId)
         .then(admin => {
             if(!admin){
@@ -155,6 +179,11 @@ exports.updateOne = (req, res, next) => {
 }
 
 exports.blockUnblock = (req, res, next) => {
+    if(req.admin.role !== "super_admin"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
     const adminId = req.params.adminId
 
     Admin.findById(adminId)
