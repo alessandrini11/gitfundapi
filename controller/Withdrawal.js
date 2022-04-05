@@ -1,6 +1,19 @@
 const Withdrawal = require('../model/Withdrawal')
 
 exports.create = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
+
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
     const amount = req.body.amount
     const reason = req.body.reason
 
@@ -66,6 +79,20 @@ exports.getOne = (req, res, next) => {
 }
 
 exports.updateOne = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
+
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
+
     const withdrawalId = req.params.withdrawalId
     const amount = req.body.amount
     const reason = req.body.reason
@@ -101,6 +128,12 @@ exports.updateOne = (req, res, next) => {
 }
 
 exports.deleteOne = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
     const withdrawalId = req.params.withdrawalId
 
     Withdrawal.findById(withdrawalId)
