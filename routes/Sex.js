@@ -1,10 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const SexController = require('../controller/Sex')
+const isAuth = require('../middleware/isAuth')
+const { body } = require('express-validator')
 
-router.post('/',SexController.create)
-router.get('/',SexController.getAll)
-router.get('/:sexId', SexController.getOne)
-router.put('/:sexId', SexController.updateOne)
+const validateSexName = [
+    body('name')
+        .trim()
+        .isString()
+]
+
+router.post('/',isAuth, validateSexName, SexController.create)
+router.get('/',isAuth, SexController.getAll)
+router.get('/:sexId', isAuth, SexController.getOne)
+router.put('/:sexId',isAuth,validateSexName , SexController.updateOne)
 
 module.exports = router

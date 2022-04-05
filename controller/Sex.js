@@ -1,6 +1,12 @@
 const Sex = require('../model/Sex')
 
 exports.create = (req, res, next) => {
+    //verify access
+    if(req.admin.role !== "super_admin"){
+        const error = new Error('Only super admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
     const name = req.body.name
 
     const sex = new Sex({
@@ -24,9 +30,18 @@ exports.create = (req, res, next) => {
 }
 
 exports.getAll = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
     Sex.find()
+        .populate('suscribers')
         .then(sexs => {
-            res.status(200).json(sexs)
+            res.status(200).json({
+                sexs
+            })
         })
         .catch(error => {
             if(!statusCode){
@@ -37,11 +52,25 @@ exports.getAll = (req, res, next) => {
 }
 
 exports.getOne = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
     const sexId = req.params.sexId
 
     Sex.findById(sexId)
+        .populate('suscribers')
         .then(sex => {
-            res.status(200).json(sex)
+            if(!sex){
+                const error = new Error('No sex found')
+                error.statusCode = 401
+                throw error
+            }
+            res.status(200).json({
+                sex
+            })
         })
         .catch(error => {
             if(!statusCode){
@@ -52,6 +81,12 @@ exports.getOne = (req, res, next) => {
 }
 
 exports.updateOne = (req, res, next) => {
+    //verify access
+    if(req.admin.role !== "super_admin"){
+        const error = new Error('Only super admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
     const sexId = req.params.sexId
     const name = req.body.name
 
