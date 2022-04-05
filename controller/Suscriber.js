@@ -1,6 +1,7 @@
 const Suscriber = require('../model/Suscriber')
 const Sex = require('../model/Sex')
 const Speciality = require('../model/Speciality')
+const { validationResult } = require('express-validator')
 const Deposit = require('../model/Deposit')
 const path = require('path')
 const fs = require('fs')
@@ -15,6 +16,19 @@ const defaultFemaleImage = 'public/images/suscribers/female.jpg'
 
 
 exports.create = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
+
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
     //user's input
     const firstName = req.body.firstName
     const lastName = req.body.lastName
@@ -130,6 +144,18 @@ exports.getOne = (req, res, next) => {
 }
 
 exports.updateOne = (req, res, next) => {
+    //verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
+    //get the error if exist
+    const errors = validationResult(req)
+    //send errors to client
+    if(!errors.isEmpty()){
+        return res.status(422).json(errors)
+    }
     //user input
     const suscriberId = req.params.suscriberId
     const firstName = req.body.firstName
@@ -147,17 +173,6 @@ exports.updateOne = (req, res, next) => {
     let newSpeciality
     let oldSpeciality
 
-
-    //test for the presence of a picture
-    /*if(!req.file){
-        if(sex === '6246bb877111c1cc44df4d70'){
-            picture = defaultMaleImage
-        } else {
-            picture = defaultFemaleImage
-        }
-    }*/
-    
-    
     Suscriber.findById(suscriberId)
         .then(suscriber => {
             if(!suscriber){
@@ -244,6 +259,13 @@ exports.updateOne = (req, res, next) => {
 }
 
 exports.blockAndUnblock = (req, res, next) => {
+    ///verify access
+    if(req.admin.role === "visitor"){
+        const error = new Error('Only admin cant perform this action')
+        error.statusCode = 401
+        throw error
+    }
+
     const suscriberId = req.params.suscriberId
     Suscriber.findById(suscriberId)
         .then(suscriber => {
